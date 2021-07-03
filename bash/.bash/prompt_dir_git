@@ -1,0 +1,63 @@
+#!/bin/bash
+
+TXT_RESET="$(tput sgr0)"
+#TXT_BOLD="$(tput bold)"
+#TXT_BLACK="$(tput setaf 0)"
+TXT_RED="$(tput setaf 1)"
+TXT_GREEN="$(tput setaf 2)"
+TXT_YELLOW="$(tput setaf 3)"
+TXT_BLUE="$(tput setaf 4)"
+TXT_PURPLE="$(tput setaf 5)"
+TXT_CYAN="$(tput setaf 6)"
+#TXT_WHITE="$(tput setaf 7)"
+# unicode "✗"
+#fancyx='\342\234\227'
+# unicode "✓"
+#checkmark='\342\234\223'
+
+function signify_root () {
+   # User color: red for root, yellow for others
+   if [[ $EUID == 0 ]]; then
+       PS1+="\\[$TXT_RED\\]"
+   else
+       PS1+="\\[$TXT_YELLOW\\]"   
+   fi
+}
+
+function git_color () {
+	unmerged_color=$TXT_PURPLE
+	unstaged_color=$TXT_RED
+	staged_color=$TXT_CYAN
+	clean_color=$TXT_BLUE
+
+	git_status=$(git status 2> /dev/null)
+
+	status_contains () { echo "$git_status" | grep -q "$1" ; }
+
+	if status_contains "Unmerged paths:" ; then
+		echo -e "$unmerged_color"
+	elif status_contains "Changes not staged for commit:" ; then
+		echo -e "$unstaged_color"
+	elif status_contains "Changes to be committed:" ; then
+		echo -e "$staged_color"
+	else
+		echo -e "$clean_color"
+	fi
+}
+
+function parse_git_branch () {
+	git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+
+#PS1+="\$(__git_ps1)"
+#GIT_PS1_DESCRIBE_STYLE='contains'
+#GIT_PS1_SHOWCOLORHINTS='y'
+#GIT_PS1_SHOWDIRTYSTATE='y' 				# *
+#GIT_PS1_SHOWSTASHSTATE='y'
+#GIT_PS1_SHOWUNTRACKEDFILES='y' 		# %
+#GIT_PS1_SHOWUPSTREAM='auto' 				# =
+
+PS1="${TXT_GREEN}[\\W] " # working dir
+PS1+="\$(git_color)\$(parse_git_branch)"
+PS1+="${TXT_RESET}> " # prompt
+
