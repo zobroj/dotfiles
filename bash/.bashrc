@@ -46,8 +46,6 @@ fi
 [ -f ~/.bash_aliases ] && source ~/.bash_aliases
 
 export EDITOR="nvim"
-# shellcheck disable=2155
-export EPOCH="$(date +%s)"
 export MANPAGER="nvim -c 'set ft=man'"
 export MANPATH="${MANPATH-$(manpath)}"
 
