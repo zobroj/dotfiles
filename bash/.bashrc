@@ -42,8 +42,8 @@ if ! shopt -oq posix; then
 fi
 
 [ -f ~/.bash/prompt ] && source ~/.bash/prompt
-[ -f ~/.bash_profile ] && source ~/.bash_profile
-[ -f ~/.bash_aliases ] && source ~/.bash_aliases
+[ -f ~/.bash/profile ] && source ~/.bash/profile
+[ -f ~/.bash/aliases ] && source ~/.bash/aliases
 
 export EDITOR="nvim"
 export MANPAGER="nvim -c 'set ft=man'"

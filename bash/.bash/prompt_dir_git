@@ -20,7 +20,7 @@ function signify_root () {
    if [[ $EUID == 0 ]]; then
        PS1+="\\[$TXT_RED\\]"
    else
-       PS1+="\\[$TXT_YELLOW\\]"   
+       PS1+="\\[$TXT_YELLOW\\]"
    fi
 }
 
