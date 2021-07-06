@@ -1,6 +1,7 @@
 #!/bin/bash
 
 TXT_RESET="$(tput sgr0)"
+#TXT_RESET="\033[m"
 #TXT_BOLD="$(tput bold)"
 #TXT_BLACK="$(tput setaf 0)"
 TXT_RED="$(tput setaf 1)"

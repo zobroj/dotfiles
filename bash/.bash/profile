@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Set Path
+[ -d "$HOME/bin" ] && export PATH="$PATH:$HOME/bin"
+
+export TMUX_COLOR="red"
+export TMUX_COLOR_ACTIVE="colour231"
+export TMUX_COLOR_BORDER="colour237"
+export TMUX_COLOR_INACTIVE="colour16"
+
+. "$HOME/.cargo/env"
+
