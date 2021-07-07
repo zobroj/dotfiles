@@ -1,7 +1,15 @@
 #!/bin/bash
 
+#PS1+="\$(__git_ps1)"
+#GIT_PS1_DESCRIBE_STYLE='contains'
+#GIT_PS1_SHOWCOLORHINTS='y'
+#GIT_PS1_SHOWDIRTYSTATE='y' 				# *
+#GIT_PS1_SHOWSTASHSTATE='y'
+#GIT_PS1_SHOWUNTRACKEDFILES='y' 		# %
+#GIT_PS1_SHOWUPSTREAM='auto' 				# =
+
+
 TXT_RESET="$(tput sgr0)"
-#TXT_RESET="\033[m"
 #TXT_BOLD="$(tput bold)"
 #TXT_BLACK="$(tput setaf 0)"
 TXT_RED="$(tput setaf 1)"
@@ -10,20 +18,11 @@ TXT_YELLOW="$(tput setaf 3)"
 TXT_BLUE="$(tput setaf 4)"
 TXT_PURPLE="$(tput setaf 5)"
 TXT_CYAN="$(tput setaf 6)"
-#TXT_WHITE="$(tput setaf 7)"
+TXT_WHITE="$(tput setaf 7)"
 # unicode "✗"
 #fancyx='\342\234\227'
 # unicode "✓"
 #checkmark='\342\234\223'
-
-function signify_root () {
-   # User color: red for root, yellow for others
-   if [[ $EUID == 0 ]]; then
-       PS1+="\\[$TXT_RED\\]"
-   else
-       PS1+="\\[$TXT_YELLOW\\]"
-   fi
-}
 
 function git_color () {
 	unmerged_color=$TXT_PURPLE
@@ -36,29 +35,39 @@ function git_color () {
 	status_contains () { echo "$git_status" | grep -q "$1" ; }
 
 	if status_contains "Unmerged paths:" ; then
-		echo -e "$unmerged_color"
+		echo "$unmerged_color"
 	elif status_contains "Changes not staged for commit:" ; then
-		echo -e "$unstaged_color"
+		echo "$unstaged_color"
 	elif status_contains "Changes to be committed:" ; then
-		echo -e "$staged_color"
+		echo "$staged_color"
 	else
-		echo -e "$clean_color"
+		echo "$clean_color"
 	fi
 }
 
-function parse_git_branch () {
+function git_branch () {
 	git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
 }
 
-#PS1+="\$(__git_ps1)"
-#GIT_PS1_DESCRIBE_STYLE='contains'
-#GIT_PS1_SHOWCOLORHINTS='y'
-#GIT_PS1_SHOWDIRTYSTATE='y' 				# *
-#GIT_PS1_SHOWSTASHSTATE='y'
-#GIT_PS1_SHOWUNTRACKEDFILES='y' 		# %
-#GIT_PS1_SHOWUPSTREAM='auto' 				# =
+set_prompt()
+{
+	local last_cmd=$?
 
-PS1="${TXT_GREEN}[\\W] " # working dir
-PS1+="\$(git_color)\$(parse_git_branch)"
-PS1+="${TXT_RESET}> " # prompt
+	PS1="\[$TXT_GREEN\][\\W] " # working dir
+	PS1+="\$(git_color)\$(git_branch)"
+	if [[ $last_cmd != 0 ]]; then
+		PS1+="\[$TXT_RED\] $last_cmd"
+	fi
+	PS1+="$TXT_RESET> "
+
+	# Prompt: red for root, yellow for others
+	if [[ $EUID == 0 ]]; then
+	   PS1+="\\[$TXT_RED\\]"
+	else
+	   PS1+="\\[$TXT_WHITE\\]"
+	fi
+
+}
+
+PROMPT_COMMAND='set_prompt'
 

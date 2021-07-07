@@ -1,25 +1,40 @@
-" SECURITY
-set nomodeline " https://www.theregister.co.uk/2019/06/12/vim_remote_command_execution_flaw/
-" TODO Vim private mode //vi.stackexchange.com/questions/834/prevent-vim-from-recording-events-for-certain-filetypes?lq=1 
-
-let mapleader = "\<Space>"
+" General Settings
+set encoding=utf-8 mouse=a nomodeline nobackup nowritebackup splitbelow splitright wildmode=longest,list,full 
 
 " DISPLAY
 colorscheme gruvbox " seoul256
+set termguicolors
 set cursorline
 set number
 set list " show hidden chars
 
-" TABS
-set tabstop=2
-set shiftwidth=2
+" DISPLAY - Background
+set background=dark
+"hi! Normal ctermbg=NONE guibg=NONE
+"hi! NonText ctermbg=NONE guibg=NONE guifg=NONE ctermfg=NONE
 
-" WINDOW Splits
-set splitbelow " more natural split
-set splitright " more natural split
+" Status Line :so $VIMRUNTIME/syntax/hitest.vim
+set statusline=
+set statusline+=%#NonText#
+set statusline+=%=
+set statusline+=\ %f
+set statusline+=\ 
+set statusline+=%#CursorLineNr#
+set statusline+=\ %y
+set statusline+=\ %r
+set statusline+=%#DiffText#
+set statusline+=\ %l/%L[%c]
 
-" MOUSE
-set mouse=a
+set tabstop=4 shiftwidth=4 softtabstop=4 autoindent smartindent noexpandtab
+
+let mapleader = "\<Space>"
+
+" <nop>
+nnoremap Q <nop>
+nnoremap <Left> <nop>
+nnoremap <Right> <nop>
+nnoremap <Up> <nop>
+nnoremap <Down> <nop>
 
 " MOTIONS
 cmap <C-a> <home>
@@ -30,21 +45,26 @@ imap <C-f> <right>
 imap <C-a> <home>
 imap <C-e> <end>
 
-" BUFFERS
-" list
+" Move - Highlighted
+vnoremap K :move '<-2<CR>gv-gv
+vnoremap J :move '>+1<CR>gv-gv
+
+" Buffers - List
 nnoremap <Leader>b :buffers!<cr>:buffer<Space>
-" next
+" Buffers - Next
 nnoremap <Leader>n :w<Bar>bn<cr>
 vnoremap <Leader>n <Esc>:w<Bar>bn<cr>
-" previous
-nnoremap <Leader>p :w<Bar>bp<cr>
+" Buffers - Previous
+noremap <Leader>p :w<Bar>bp<cr>
 vnoremap <Leader>p <Esc>:w<Bar>bp<cr>
 
-" FILE
-" save
+" FILE - save
 cnoremap <C-s> <C-u>write<cr>
 inoremap <C-s> <Esc>:write<cr>
 nnoremap <C-s> :write<cr>
+
+" Goyo
+nnoremap <Leader><Enter> :Goyo<CR>
 
 " Folds
 " set foldmethod=manual
@@ -66,3 +86,33 @@ nnoremap <Leader>cs :source $HOME/.config/nvim/init.vim<CR>
 nnoremap ,html :-1read $HOME/.vim/.skeleton.html<CR>3jwf>a
 nnoremap ,dmod :-1read $HOME/.config/nvim/snippets/elixir.dmod<CR>ela
 nnoremap ,def :-1read $HOME/.config/nvim/snippets/elixir.def<CR>ela
+
+" Goyo
+function! s:goyo_enter()
+  if executable('tmux') && strlen($TMUX)
+    silent !tmux set status off
+    silent !tmux list-panes -F '\#F' | grep -q Z || tmux resize-pane -Z
+  endif
+  set nocursorline
+  set noshowmode
+  set noshowcmd
+  set scrolloff=999
+  Limelight
+  " ...
+endfunction
+
+function! s:goyo_leave()
+  if executable('tmux') && strlen($TMUX)
+    silent !tmux set status on
+    silent !tmux list-panes -F '\#F' | grep -q Z && tmux resize-pane -Z
+  endif
+  set cursorline
+  set showmode
+  set showcmd
+  set scrolloff=5
+  Limelight!
+  " ...
+endfunction
+
+autocmd! User GoyoEnter nested call <SID>goyo_enter()
+autocmd! User GoyoLeave nested call <SID>goyo_leave()

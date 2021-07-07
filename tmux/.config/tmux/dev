@@ -1,0 +1,7 @@
+select-pane -t 0 # select the first (0) pane
+split-window -h -p 50 # split it into two halves
+
+select-pane -t 1 # select the new, second (1) pane
+split-window -v -p 50 # split it into two halves
+select-pane -t 0 # go back to the first pane
+

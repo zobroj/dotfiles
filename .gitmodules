@@ -1,0 +1,15 @@
+[submodule "submodules/goyo.vim"]
+	path = submodules/goyo.vim
+	url = https://github.com/junegunn/goyo.vim.git
+[submodule "submodules/limelight.vim"]
+	path = submodules/limelight.vim
+	url = https://github.com/junegunn/limelight.vim.git
+[submodule "vim-surround"]
+	path = vim-surround
+	url = https://github.com/tpope/vim-surround.git
+[submodule "submodules/vim-surround"]
+	path = submodules/vim-surround
+	url = https://github.com/tpope/vim-surround.git
+[submodule "submodules/vimwiki"]
+	path = submodules/vimwiki
+	url = https://github.com/vimwiki/vimwiki.git

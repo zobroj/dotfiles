@@ -1,0 +1,58 @@
+#!/bin/bash
+
+set_prompt()
+{
+   local last_cmd=$?
+   local txtreset='$(tput sgr0)'
+   local txtbold='$(tput bold)'
+   local txtblack='$(tput setaf 0)'
+   local txtred='$(tput setaf 1)'
+   local txtgreen='$(tput setaf 2)'
+   local txtyellow='$(tput setaf 3)'
+   local txtblue='$(tput setaf 4)'
+   local txtpurple='$(tput setaf 5)'
+   local txtcyan='$(tput setaf 6)'
+   local txtwhite='$(tput setaf 7)'
+   local fancyx='\342\234\227'	# unicode "✗"
+   local checkmark='\342\234\223'	# unicode "✓"
+   local COLOR_BAD=$txtred
+   local COLOR_NEUTRAL=$txtwhite
+
+   # Newline
+   PS1="\n"
+
+   # Return Status: hidden if good
+   if [[ $last_cmd != 0 ]]; then
+      PS1+="\[$COLOR_BAD\]$last_cmd "
+   fi
+
+   # Git Branch
+   PS1+="\[$txtgreen\]$(__git_ps1 '(%s) ')"
+
+   # Current Path: Elucidate if home
+   if [[ $(pwd) == $HOME ]]; then
+	   PS1+="\[$COLOR_NEUTRAL\]\h$HOME/\w"
+   else
+	   PS1+="\[$COLOR_NEUTRAL\]\w"
+   fi
+
+   # Newline
+   PS1+="\n"
+
+   # User@Host: Hide if in tmux
+   if [ -z $TMUX ]; then
+	   PS1+="\u\[$txtwhite\]@\h "
+   fi
+
+   # Prompt: Red $ for root, # yellow for others
+   if [[ $EUID == 0 ]]; then
+       PS1+="\[$txtred\]"
+   else
+       PS1+="\[$txtyellow\]"   
+   fi
+   PS1+="\\$ \[$txtreset\]"
+
+   # Full date + full time (24h)
+   #PS1+="\[$txtwhite\]\n\D{%A %d %B %Y %H:%M:%S}\n"
+}
+PROMPT_COMMAND='set_prompt'

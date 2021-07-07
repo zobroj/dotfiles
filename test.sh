@@ -8,7 +8,12 @@ test_bash () {
 	shellcheck "bash/.bash/prompt"
 }
 
+test_broken_links () {
+	find ~ -xtype l
+}
+
 test_bash
+test_broken_links
 
 #for f in bash/.bash/*
 #do
