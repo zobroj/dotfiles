@@ -1,58 +1,78 @@
 #!/bin/bash
 
-set_prompt()
-{
-   local last_cmd=$?
-   local txtreset='$(tput sgr0)'
-   local txtbold='$(tput bold)'
-   local txtblack='$(tput setaf 0)'
-   local txtred='$(tput setaf 1)'
-   local txtgreen='$(tput setaf 2)'
-   local txtyellow='$(tput setaf 3)'
-   local txtblue='$(tput setaf 4)'
-   local txtpurple='$(tput setaf 5)'
-   local txtcyan='$(tput setaf 6)'
-   local txtwhite='$(tput setaf 7)'
-   local fancyx='\342\234\227'	# unicode "✗"
-   local checkmark='\342\234\223'	# unicode "✓"
-   local COLOR_BAD=$txtred
-   local COLOR_NEUTRAL=$txtwhite
+set_prompt () {
+	local last_cmd=$? # first line of fuction
+	local txtreset='$(tput sgr0)'
+	local txtbold='$(tput bold)'
+	local txtblack='$(tput setaf 0)'
+	local txtred='$(tput setaf 1)'
+	local txtgreen='$(tput setaf 2)'
+	local txtyellow='$(tput setaf 3)'
+	local txtblue='$(tput setaf 4)'
+	local txtpurple='$(tput setaf 5)'
+	local txtcyan='$(tput setaf 6)'
+	local txtwhite='$(tput setaf 7)'
+	local fancyx='\342\234\227'	# unicode "✗"
+	local checkmark='\342\234\223'	# unicode "✓"
+	local COLOR_BAD=$txtred
+	local COLOR_NEUTRAL=$txtwhite
 
-   # Newline
-   PS1="\n"
+	function git_color () {
+		local unmerged_color=$txtpurple
+		local unstaged_color=$txtred
+		local staged_color=$txtcyan
+		local clean_color=$txtblue
 
-   # Return Status: hidden if good
-   if [[ $last_cmd != 0 ]]; then
-      PS1+="\[$COLOR_BAD\]$last_cmd "
-   fi
+		git_status=$(git status 2> /dev/null)
 
-   # Git Branch
-   PS1+="\[$txtgreen\]$(__git_ps1 '(%s) ')"
+		status_contains () { echo "$git_status" | grep -q "$1" ; }
 
-   # Current Path: Elucidate if home
-   if [[ $(pwd) == $HOME ]]; then
+		if status_contains "Unmerged paths:" ; then
+			echo -e "$unmerged_color"
+		elif status_contains "Changes not staged for commit:" ; then
+			echo -e "$unstaged_color"
+		elif status_contains "Changes to be committed:" ; then
+			echo -e "$staged_color"
+		else
+			echo -e "$clean_color"
+		fi
+	}
+
+	# Newline
+	PS1="\n"
+
+	# Return Status: hidden if good
+	if [[ $last_cmd != 0 ]]; then
+	  PS1+="\[$COLOR_BAD\]$last_cmd "
+	fi
+
+	# Git Branch
+	PS1+="\[$(git_color)\]$(__git_ps1 '(%s) ')"
+
+	# Current Path: Elucidate if home
+	if [[ $(pwd) == $HOME ]]; then
 	   PS1+="\[$COLOR_NEUTRAL\]\h$HOME/\w"
-   else
+	else
 	   PS1+="\[$COLOR_NEUTRAL\]\w"
-   fi
+	fi
 
-   # Newline
-   PS1+="\n"
+	# Newline
+	PS1+="\n"
 
-   # User@Host: Hide if in tmux
-   if [ -z $TMUX ]; then
+	# User@Host: Hide if in tmux
+	if [ -z $TMUX ]; then
 	   PS1+="\u\[$txtwhite\]@\h "
-   fi
+	fi
 
-   # Prompt: Red $ for root, # yellow for others
-   if [[ $EUID == 0 ]]; then
-       PS1+="\[$txtred\]"
-   else
-       PS1+="\[$txtyellow\]"   
-   fi
-   PS1+="\\$ \[$txtreset\]"
+	# Prompt: Red # for root, white $
+	if [[ $EUID == 0 ]]; then
+	   PS1+="\[$COLOR_BAD\]"
+	else
+	   PS1+="\[$COLOR_NEUTRAL\]"   
+	fi
+	PS1+="\\$ \[$txtreset\]"
 
-   # Full date + full time (24h)
-   #PS1+="\[$txtwhite\]\n\D{%A %d %B %Y %H:%M:%S}\n"
+	# Full date + full time (24h)
+	#PS1+="\[$txtwhite\]\n\D{%A %d %B %Y %H:%M:%S}\n"
 }
 PROMPT_COMMAND='set_prompt'
