@@ -17,25 +17,31 @@ set_prompt () {
 	local COLOR_BAD=$txtred
 	local COLOR_NEUTRAL=$txtwhite
 
-	function git_color () {
+	function git_status () {
 		local unmerged_color=$txtpurple
 		local unstaged_color=$txtred
 		local staged_color=$txtcyan
 		local clean_color=$txtblue
 
-		git_status=$(git status 2> /dev/null)
+		local GIT_BRANCH=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+		local GIT_COLOR
+		local GIT_STATUS=$(git status 2> /dev/null)
 
-		status_contains () { echo "$git_status" | grep -q "$1" ; }
+		# Define Color
+		status_contains () { echo "$GIT_STATUS" | grep -q "$1" ; }
 
 		if status_contains "Unmerged paths:" ; then
-			echo -e "$unmerged_color"
+			GIT_COLOR="$unmerged_color"
 		elif status_contains "Changes not staged for commit:" ; then
-			echo -e "$unstaged_color"
+			GIT_COLOR="$unstaged_color"
 		elif status_contains "Changes to be committed:" ; then
-			echo -e "$staged_color"
+			GIT_COLOR="$staged_color"
 		else
-			echo -e "$clean_color"
+			GIT_COLOR="$clean_color"
 		fi
+
+		# Only show if in a git repo
+		[ $GIT_BRANCH ] && PS1+="\[$GIT_COLOR\]($GIT_BRANCH) "
 	}
 
 	# Newline
@@ -46,8 +52,7 @@ set_prompt () {
 	  PS1+="\[$COLOR_BAD\]$last_cmd "
 	fi
 
-	# Git Branch
-	PS1+="\[$(git_color)\]$(__git_ps1 '(%s) ')"
+	git_status
 
 	# Current Path: Elucidate if home
 	if [[ $(pwd) == $HOME ]]; then
