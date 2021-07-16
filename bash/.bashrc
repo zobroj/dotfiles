@@ -1,6 +1,9 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+# 'autocd' change directory implied, though overidden by $PATH
+# shopt -s autocd
+
 # HISTORY
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options

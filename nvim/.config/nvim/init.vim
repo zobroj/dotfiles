@@ -4,14 +4,15 @@ set encoding=utf-8 mouse=a nomodeline nobackup nowritebackup splitbelow splitrig
 " DISPLAY
 colorscheme gruvbox " seoul256
 set termguicolors
-set cursorline
-set number
+set cursorline number
 set list " show hidden chars
 
 " DISPLAY - Background
 set background=dark
 "hi! Normal ctermbg=NONE guibg=NONE
 "hi! NonText ctermbg=NONE guibg=NONE guifg=NONE ctermfg=NONE
+
+set path+=** 
 
 " Status Line :so $VIMRUNTIME/syntax/hitest.vim
 set statusline=
@@ -26,6 +27,7 @@ set statusline+=%#DiffText#
 set statusline+=\ %l/%L[%c]
 
 set tabstop=4 shiftwidth=4 softtabstop=4 autoindent smartindent noexpandtab
+
 
 let mapleader = "\<Space>"
 
