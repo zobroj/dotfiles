@@ -73,12 +73,14 @@ alias tcn="mv --force -t ~/.local/share/Trash"
 
 
 #### File Inspection ####
-
 alias diff='diff --color'
 
 # Grep
 alias grep='grep --color'
 alias gh='history|grep'		# quick history search
+
+# Info
+alias info='info --vi-keys'
 
 # List
 alias l="ls -F --color"
